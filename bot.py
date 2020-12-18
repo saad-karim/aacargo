@@ -12,7 +12,8 @@ class Bot():
     x, _ = pyautogui.size()
     pyautogui.click(x/2, 0)
 
-    pyautogui.hotkey("ctrl", "l")
+    pyautogui.hotkey("shift", "f6") # Moves focus out of developer tools to chrome page
+    pyautogui.hotkey("ctrl", "l") # Shortcut to URL input
     pyautogui.hotkey("delete")
     pyautogui.typewrite("aacargo.com/AACargo/tracking")
     pyautogui.hotkey("enter")

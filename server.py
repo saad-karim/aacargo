@@ -16,10 +16,11 @@ class Track(Resource):
     self.queue = queue
 
   def get(self):
-    self.lock.acquire()
-    trackingResponse = None
-
     try:
+      self.lock.acquire()
+      print("Get request received: ")
+      trackingResponse = None
+
       global cookieAcquired
 
       # If this is the first time we are running this request,
@@ -46,7 +47,6 @@ class Track(Resource):
       while trackingResponse == "":
         time.sleep(.1)
         trackingResponse = self.queue.get()
-
     finally:
       self.lock.release()
 
@@ -61,10 +61,12 @@ class TrackResponse(Resource):
     self.queue = queue
 
   def post(self):
+    print("Post request received: ", request.data)
     self.queue.put(request.data)
 
+app = Flask(__name__)
+
 class Server:
-  app = Flask(__name__)
   api = Api(app)
 
   q = queue.Queue()
@@ -72,10 +74,3 @@ class Server:
 
   api.add_resource(Track, '/track', resource_class_kwargs={'lock': lock, 'queue': q})
   api.add_resource(TrackResponse, '/response', resource_class_kwargs={'queue': q})
-
-  def run(self, host):
-    self.app.run(host=host)
-
-if __name__ == "__main__": 
-  server = Server()
-  server.run('0.0.0.0')

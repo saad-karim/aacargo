@@ -3,14 +3,16 @@ import pyperclip
 import time
 
 class Bot():
-  def refreshPage(self):
-    print("Refreshing page...")
-
+  def focus(self):
     # Focus on browser by clicking on it. This should be adjusted
     # on a machine basis and resolution set. The browser should be
-    # maximized mode
+    # in maximized mode
     x, _ = pyautogui.size()
     pyautogui.click(x/2, 0)
+
+  def refreshPage(self):
+    print("Refreshing page...")
+    self.focus()
 
     pyautogui.hotkey("ctrl", "l")
     pyautogui.hotkey("delete")
@@ -19,12 +21,7 @@ class Bot():
 
   def track(self, awbCode, awbNumber):
     print("Tracking number {}".format(awbNumber))
-
-    # Focus on browser by clicking on it. This should be adjusted
-    # on a machine basis and resolution set. The browser should be
-    # maximized mode
-    x, _ = pyautogui.size()
-    pyautogui.click(x/2, 0)
+    self.focus()
 
     # Focus on console input box
     time.sleep(.05)

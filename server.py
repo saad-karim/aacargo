@@ -10,20 +10,26 @@ import time
 aaBot = Bot()
 cookieAcquired = 0
 
-class Track(Resource):
-  def __init__(self, lock, queue):
-    self.lock = lock
-    self.queue = queue
+app = Flask(__name__)
+api = Api(app)
 
+# q = queue.Queue()
+q = None
+lock = threading.Lock()
+
+class Track(Resource):
   def get(self):
-    self.lock.acquire()
+    lock.acquire()
     trackingResponse = None
 
     try:
-      global cookieAcquired
-
+      awbCode = request.args.get('awbCode')
+      awbNumber = request.args.get('awbNumber')
+      
+      print("Get call received to track number {}".format(awbNumber))
       # If this is the first time we are running this request,
       # set the value of when we acquire the first cooked.
+      global cookieAcquired
       if cookieAcquired == 0:
         cookieAcquired = datetime.now()
 
@@ -32,23 +38,28 @@ class Track(Resource):
       timeNow = datetime.now()
       diff = timeNow - cookieAcquired
 
-      # if diff.total_seconds() >= (4*60*60):
-      if diff.total_seconds() >= (15):
+      if diff.total_seconds() >= (4*60*60):
         # 4 hours have passed, refresh page to get new cookie
         cookieAcquired = datetime.now()
         aaBot.refreshPage()
 
-      awbCode = request.args.get('awbCode')
-      awbNumber = request.args.get('awbNumber')
       threading.Thread(target=aaBot.track, args=(awbCode, awbNumber)).start()
+      print("Bot run completed")
 
-      trackingResponse = self.queue.get()
-      while trackingResponse == "":
+      # print("size of queue: ", q.qsize())
+      # if q.qsize() > 0: 
+      #   trackingResponse = q.get()
+      # print('tracking response: ', trackingResponse)
+      while trackingResponse == None:
         time.sleep(.1)
-        trackingResponse = self.queue.get()
+        print("size of queue: ", q.qsize())
+        if q.qsize() > 0: 
+          trackingResponse = q.get(block=True)
+          print('tracking response: ', trackingResponse)
+        # trackingResponse = q.get(block=True)
 
     finally:
-      self.lock.release()
+      lock.release()
 
     response = json.loads(trackingResponse)
     if "status" in response:
@@ -57,25 +68,27 @@ class Track(Resource):
     return response
 
 class TrackResponse(Resource):
-  def __init__(self, queue):
-    self.queue = queue
-
   def post(self):
-    self.queue.put(request.data)
+    print("Post request from bot: ", request.data)
+    q.put(request.data)
+    print("size of queue: ", q.qsize())
 
-class Server:
-  app = Flask(__name__)
-  api = Api(app)
+api.add_resource(Track, '/track' )
+api.add_resource(TrackResponse, '/response')
 
-  q = queue.Queue()
-  lock = threading.Lock()
+# class Server():
+#   app = Flask(__name__)
+#   api = Api(app)
 
-  api.add_resource(Track, '/track', resource_class_kwargs={'lock': lock, 'queue': q})
-  api.add_resource(TrackResponse, '/response', resource_class_kwargs={'queue': q})
+#   q = queue.Queue()
+#   lock = threading.Lock()
 
-  def run(self, host):
-    self.app.run(host=host)
+#   api.add_resource(Track, '/track', resource_class_kwargs={'lock': lock, 'queue': q})
+#   api.add_resource(TrackResponse, '/response', resource_class_kwargs={'queue': q})
 
-if __name__ == "__main__": 
-  server = Server()
-  server.run('0.0.0.0')
+#   def run(self, host):
+#     self.app.run(host=host)
+
+# if __name__ == "__main__": 
+#   server = Server()
+#   server.run('0.0.0.0')

@@ -24,7 +24,7 @@ class Bot():
     pyautogui.click(x/2, y/8)
 
   def refreshPage(self):
-    print("Refreshing page...")
+    print("[Automation] Refreshing page...")
     self.focus()
 
     pyautogui.hotkey("shift", "f6") # Moves focus out of developer tools to chrome page

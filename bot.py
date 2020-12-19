@@ -35,7 +35,11 @@ class Bot():
       pyautogui.hotkey("ctrl", "l") # Shortcut to URL input
 
     pyautogui.hotkey("delete")
-    pyautogui.typewrite("aacargo.com/AACargo/tracking")
+    pyperclip.copy("aacargo.com/AACargo/tracking")
+    if operSys == "macos":
+      pyautogui.hotkey("command", "v")
+    else:
+      pyautogui.hotkey("ctrl", "v")
     pyautogui.hotkey("enter")
     time.sleep(guiInputInterval)
 
@@ -67,7 +71,7 @@ class Bot():
     url = 'fetch("https://www.aacargo.com/api/tracking/awbs/", {method: "post", headers: {"Content-Type": "application/json"}, body: \'{"airwayBills": [{"awbCode": "%s", "awbNumber": "%s", "awbId": "0"}]}\'}).then(response => response.json()).then((data) => {fetch("http://localhost:5000/response", {method: "post", mode: "no-cors", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)})})' % (awbCode, awbNumber)
     pyperclip.copy(url)
     if operSys == "macos":
-      pyautogui.hotkey("command", "a")
+      pyautogui.hotkey("command", "v")
     else:
       pyautogui.hotkey("ctrl", "v")
     pyautogui.hotkey("enter")

@@ -14,7 +14,7 @@ Run the following command: `sudo apt-get install python3-tk python3-dev`
 
 Set environment variable `export AABOT_OS=macos`
 
-Make sure terminal has permissions to control computer. Go to `System Preferences > Security & Privacy > Accessbility`
+Make sure terminal has permissions to control the computer. Go to `System Preferences > Security & Privacy > Accessbility`
 and make sure the terminal that will be used to launch the server is selected.
 
 ### Configuration ###
@@ -22,7 +22,7 @@ and make sure the terminal that will be used to launch the server is selected.
 Supported Environment Variables:
 
 `AABOT_BROWSER_REFRESH_INTERVAL` - This is the amount of time between browser refreshes. After a certain period
-of time the cookies go stale and requests start to fail. By default, refreshes happend at every 15 seconds. This
+of time the cookies go stale and requests start to fail. By default, refreshes happen every 15 seconds. This
 can be adjusted using this environment variable. The interval is defined in seconds. For example, setting this
 to 50 will trigger a browser refresh if 50 seconds have passed since the last refresh.
 
@@ -42,9 +42,9 @@ the OS is set to linux. Valid values are `linux` or `macos`.
 Before running the server make sure that python virtual env is running. If not, run the following `pipenv shell`
 
 1. Start server by running `gunicorn -w 1 --threads 20 -b 0.0.0.0:5000 wsgi:app`
-2. Open a browser window and maximize the window
+2. Open Chrome browser and maximize the window
 3. Navigate to www.aacargo.com/AACargo/tracking
-4. Open developers tools to 'Console' tab, see image below:
+4. Open developers tools to `Console` tab, see image below:
 
 ![](docs/BrowserWindow.png)
 

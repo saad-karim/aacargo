@@ -32,6 +32,7 @@ class Track(Resource):
       # If this is the first time we are running this request,
       # set the value of when we acquire the first cooked.
       if cookieAcquired == 0:
+        aaBot.refreshPage()
         cookieAcquired = datetime.now()
 
       # A new cookie will be requested every 4 hours to ensure that
@@ -50,11 +51,7 @@ class Track(Resource):
       print("[Server] Fetching tracking information")
       threading.Thread(target=aaBot.track, args=(awbCode, awbNumber)).start()
 
-      trackingResponse = self.queue.get()
-      while trackingResponse == None:
-        time.sleep(.1)
-        trackingResponse = self.queue.get()
-
+      trackingResponse = self.queue.get(block=True, timeout=30)
       response = json.loads(trackingResponse)
 
       # If response contains status, the means most likely the quest failed and we should the appropriate HTTP error

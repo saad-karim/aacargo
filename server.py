@@ -10,11 +10,18 @@ import os
 
 aaBot = Bot()
 cookieAcquired = 0
+
 refreshInterval = os.environ.get('AABOT_BROWSER_REFRESH_INTERVAL')
 if refreshInterval == None:
   refreshInterval = 15
 else:
   refreshInterval = int(refreshInterval)
+
+timeout = os.environ.get('AABOT_TIMEOUT')
+if timeout == None:
+  timeout = 5
+else:
+  timeout = int(timeout)
 
 class Track(Resource):
   def __init__(self, lock, queue):
@@ -51,7 +58,7 @@ class Track(Resource):
       print("[Server] Fetching tracking information")
       threading.Thread(target=aaBot.track, args=(awbCode, awbNumber)).start()
 
-      trackingResponse = self.queue.get(block=True, timeout=30)
+      trackingResponse = self.queue.get(block=True, timeout=timeout)
       response = json.loads(trackingResponse)
 
       # If response contains status, the means most likely the quest failed and we should the appropriate HTTP error
@@ -61,11 +68,14 @@ class Track(Resource):
 
       # The queue should have only a single element in it a time. If after reading of the queue
       # there are still values in the queue, there might be stale date in the queue and it should be removed
-      if self.queue.qsize() > 0:
+      if self.queue.empty() is False:
         self.queue = queue.Queue()
 
       print("[Server] Request for {} completed".format(awbNumber))
       return response
+    except queue.Empty:
+      print("[Server] ERROR - Request for {} failed, make sure that developer tools is open to console tab and browser is on right page".format(awbNumber))
+      return Response("server failed to handle request", status=500, mimetype='application/json')
     finally:
       self.lock.release()
 

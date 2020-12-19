@@ -11,6 +11,7 @@ httpserver = "*"
 flask = "*"
 flask-jsonpify = "*"
 flask-restful = "*"
+gunicorn = "*"
 
 [dev-packages]
 

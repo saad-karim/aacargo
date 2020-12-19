@@ -1,11 +1,20 @@
 ## Setup Guide ##
 
+Requires: Python 3.7+
+
+Install pipenv: pip install pipenv
+Install dependencies: pipenv install -r requirements.tx
+
 **Linux:**
 
 You must install tkinter on Linux to use MouseInfo. Run the following command: `sudo apt-get install python3-tk python3-dev`
 
 **Mac:**
 
+Set environment variable `export AABOT_OS=macos`
+
+Make sure terminal has permissions to control computer. Go to System Preferences > Security & Privacy > Accessbility
+and make sure the terminal that will be used to launch the server is selected.
 
 ### Configuration ###
 
@@ -24,7 +33,12 @@ machines more time process GUI events.
 `AABOT_PRESERVE_CONSOLE_HISTORY` - If set to true, the console logs will not be deleted between request. This is
 disabled by default to prevent the console log from getting infinitely big and consuming memory.
 
+`AABOT_OS` - The operating system the server will be running on. Different OS have different key bindings. By default,
+the OS is set to linux. Valid values are `linux` or `macos`.
+
 ### Starting Server ###
+
+Before running the server make sure that python virtual env is running. If not, run the following `pipenv shell`
 
 1. Start server by running `gunicorn -w 1 --threads 20 -b 0.0.0.0:5000 wsgi:app`
 2. Open a browser window and maximize the window

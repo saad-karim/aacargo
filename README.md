@@ -2,8 +2,9 @@
 
 Requires: Python 3.7+
 
-Install pipenv: pip install pipenv
-Install dependencies: pipenv install -r requirements.tx
+Install pipenv: `pip install pipenv`
+
+Install dependencies: `pipenv install -r requirements.txt`
 
 **Linux:**
 
@@ -13,7 +14,7 @@ You must install tkinter on Linux to use MouseInfo. Run the following command: `
 
 Set environment variable `export AABOT_OS=macos`
 
-Make sure terminal has permissions to control computer. Go to System Preferences > Security & Privacy > Accessbility
+Make sure terminal has permissions to control computer. Go to `System Preferences > Security & Privacy > Accessbility`
 and make sure the terminal that will be used to launch the server is selected.
 
 ### Configuration ###

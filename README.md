@@ -8,7 +8,7 @@ Install dependencies: `pipenv install -r requirements.txt`
 
 **Linux:**
 
-You must install tkinter on Linux to use MouseInfo. Run the following command: `sudo apt-get install python3-tk python3-dev`
+Run the following command: `sudo apt-get install python3-tk python3-dev`
 
 **Mac:**
 
@@ -50,5 +50,4 @@ Before running the server make sure that python virtual env is running. If not, 
 
 ## Notes ##
 
-If the server takes a long time to respond, the connection will timeout based on the client's timeout settings.
-By default, the client timesout after 30 seconds.
+If the server takes a long time to respond, the connection will timeout after 30 seconds.

@@ -26,6 +26,7 @@ class Bot():
     pyautogui.hotkey("delete")
     pyautogui.typewrite("aacargo.com/AACargo/tracking")
     pyautogui.hotkey("enter")
+    time.sleep(guiInputInterval)
 
   def track(self, awbCode, awbNumber):
     print("[Automation] Tracking number {}".format(awbNumber))

@@ -6,9 +6,15 @@ from bot import Bot
 import threading
 import queue
 import time
+import os
 
 aaBot = Bot()
 cookieAcquired = 0
+refreshInterval = os.environ.get('AABOT_BROWSER_REFRESH_INTERVAL')
+if refreshInterval == None:
+  refreshInterval = 15
+else:
+  refreshInterval = int(refreshInterval)
 
 class Track(Resource):
   def __init__(self, lock, queue):
@@ -18,7 +24,7 @@ class Track(Resource):
   def get(self):
     try:
       self.lock.acquire()
-      print("Get request received: ")
+      print("[Server] Get request received")
       trackingResponse = None
 
       global cookieAcquired
@@ -33,35 +39,45 @@ class Track(Resource):
       timeNow = datetime.now()
       diff = timeNow - cookieAcquired
 
-      # if diff.total_seconds() >= (4*60*60):
-      if diff.total_seconds() >= (15):
-        # 4 hours have passed, refresh page to get new cookie
+      if diff.total_seconds() >= refreshInterval:
+        # If refresh interval has passed, efresh page to get new cookie
         cookieAcquired = datetime.now()
         aaBot.refreshPage()
 
       awbCode = request.args.get('awbCode')
       awbNumber = request.args.get('awbNumber')
+
+      print("[Server] Fetching tracking information")
       threading.Thread(target=aaBot.track, args=(awbCode, awbNumber)).start()
 
       trackingResponse = self.queue.get()
-      while trackingResponse == "":
+      while trackingResponse == None:
         time.sleep(.1)
         trackingResponse = self.queue.get()
+
+      response = json.loads(trackingResponse)
+
+      # If response contains status, the means most likely the quest failed and we should the appropriate HTTP error
+      # code to return back to client
+      if "status" in response:
+        return Response(trackingResponse, status=response["status"], mimetype='application/json')
+
+      # The queue should have only a single element in it a time. If after reading of the queue
+      # there are still values in the queue, there might be stale date in the queue and it should be removed
+      if self.queue.qsize() > 0:
+        self.queue = queue.Queue()
+
+      print("[Server] Request for {} completed".format(awbNumber))
+      return response
     finally:
       self.lock.release()
-
-    response = json.loads(trackingResponse)
-    if "status" in response:
-      return Response(trackingResponse, status=response["status"], mimetype='application/json')
-
-    return response
 
 class TrackResponse(Resource):
   def __init__(self, queue):
     self.queue = queue
 
   def post(self):
-    print("Post request received: ", request.data)
+    print("[Server] Post request received")
     self.queue.put(request.data)
 
 app = Flask(__name__)

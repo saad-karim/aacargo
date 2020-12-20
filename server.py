@@ -66,17 +66,17 @@ class Track(Resource):
       if "status" in response:
         return Response(trackingResponse, status=response["status"], mimetype='application/json')
 
-      # The queue should have only a single element in it a time. If after reading of the queue
-      # there are still values in the queue, there might be stale date in the queue and it should be removed
-      if self.queue.empty() is False:
-        self.queue = queue.Queue()
-
       print("[Server] Request for {} completed".format(awbNumber))
       return response
     except queue.Empty:
       print("[Server] ERROR - Request for {} failed, make sure that developer tools is open to console tab and browser is on right page".format(awbNumber))
       return Response("server failed to handle request", status=500, mimetype='application/json')
     finally:
+      # The queue should have only a single element in it a time. If after reading of the queue
+      # there are still values in the queue, there might be stale date in the queue and it should be removed
+      while not self.queue.empty():
+        self.queue.get_nowait()
+
       self.lock.release()
 
 class TrackResponse(Resource):

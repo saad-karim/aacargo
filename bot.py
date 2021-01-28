@@ -1,3 +1,4 @@
+from datetime import datetime
 import pyautogui
 import pyperclip
 import time
@@ -24,7 +25,7 @@ class Bot():
     pyautogui.click(x/2, y/8)
 
   def refreshPage(self):
-    print("[Automation] Refreshing page...")
+    print("[Automation][{}] Refreshing page...".format(datetime.now()))
     self.focus()
 
     pyautogui.hotkey("shift", "f6") # Moves focus out of developer tools to chrome page
@@ -44,7 +45,7 @@ class Bot():
     time.sleep(guiInputInterval)
 
   def track(self, awbCode, awbNumber):
-    print("[Automation] Tracking number {}".format(awbNumber))
+    print("[Automation][{}] Tracking number {}".format(datetime.now(), awbNumber))
     self.focus()
 
     # Focus on console input box
@@ -75,4 +76,5 @@ class Bot():
     else:
       pyautogui.hotkey("ctrl", "v")
     pyautogui.hotkey("enter")
-    print("[Automation] Task completed for number {}".format(awbNumber))
+    time.sleep(guiInputInterval)
+    print("[Automation][{}] Task completed for number {}".format(datetime.now(), awbNumber))

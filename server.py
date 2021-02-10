@@ -4,6 +4,7 @@ from flask import Flask, Response, request
 from flask_restful import Resource, Api
 from bot import Bot
 from airfrance import AirFrance
+from pdfgenerator import PDFGenerator
 import threading
 import Xlib.threaded
 import queue
@@ -112,3 +113,4 @@ class Server:
   api.add_resource(Track, '/track', resource_class_kwargs={'lock': lock, 'queue': q})
   api.add_resource(TrackResponse, '/response', resource_class_kwargs={'queue': q})
   api.add_resource(AirFrance, '/airfrance/shipment/')
+  api.add_resource(PDFGenerator, '/invoice/pdf')
